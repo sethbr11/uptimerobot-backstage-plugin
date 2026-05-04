@@ -3,7 +3,7 @@
  * @property date - The date
  * @property uptimeRatio - The uptime ratio
  */
-export type UptimeRobotDailyUptime = {
+export type DailyUptime = {
   date: string;
   uptimeRatio?: number;
 };
@@ -16,7 +16,7 @@ export type UptimeRobotDailyUptime = {
  * @property durationSeconds - The duration in seconds
  * @property reason - The reason
 */
-export type UptimeRobotIncident = {
+export type BasicIncident = {
   id: string;
   type: string;
   startedAt: string;
@@ -29,7 +29,7 @@ export type UptimeRobotIncident = {
  * @property timestamp - The timestamp
  * @property valueMs - The response time in milliseconds
 */
-export type UptimeRobotResponseTimePoint = {
+export type ResponseTimePoint = {
   timestamp: string;
   valueMs: number;
 };
@@ -42,12 +42,12 @@ export type UptimeRobotResponseTimePoint = {
  * @property minMs - The minimum response time in milliseconds
  * @property series - The response time series
  */
-export type UptimeRobotResponseTimeChart = {
+export type APIResponseTimeChart = {
   windowDays: number;
   avgMs?: number;
   maxMs?: number;
   minMs?: number;
-  series: UptimeRobotResponseTimePoint[];
+  series: ResponseTimePoint[];
 };
 
 /** Mirrors `uptimerobot.graphs` for the UI (booleans + day windows)
@@ -57,7 +57,7 @@ export type UptimeRobotResponseTimeChart = {
  * @property responseTime - Whether to display the response time
  * @property responseTimeDays - The window for the response-time request (from `graphs.responseTime.days`)
 */
-export type UptimeRobotGraphDisplay = {
+export type GraphDisplay = {
   dailyUptime: boolean;
   dailyUptimeDays: number;
   responseTime: boolean;
@@ -104,12 +104,12 @@ type MonitorHistoryUptime = {
  * @property uptime - The uptime
  * @property responseTime - The response time
  */
-export type UptimeRobotMonitorSummaryStats = {
+export type MonitorSummaryStats = {
   chartDayCount: number;
-  display: UptimeRobotGraphDisplay;
+  display: GraphDisplay;
   monitor: BasicMonitor;
   uptime: MonitorHistoryUptime;
-  responseTime?: UptimeRobotResponseTimeChart;
+  responseTime?: APIResponseTimeChart;
 };
 
 /** Payload returned by the uptimerobot backend entity stats routes for the frontend entity card
@@ -117,7 +117,7 @@ export type UptimeRobotMonitorSummaryStats = {
  * @property dailyUptime - The daily uptime
  * @property incidents - The incidents
  */
-export type UptimeRobotMonitorStats = UptimeRobotMonitorSummaryStats & {
-  dailyUptime: UptimeRobotDailyUptime[];
-  incidents: UptimeRobotIncident[];
+export type MonitorStats = MonitorSummaryStats & {
+  dailyUptime: DailyUptime[];
+  incidents: BasicIncident[];
 };

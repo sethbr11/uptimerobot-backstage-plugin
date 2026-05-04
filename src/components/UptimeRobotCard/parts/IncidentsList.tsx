@@ -7,7 +7,7 @@ import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
 import Divider from '@material-ui/core/Divider';
 import Chip from '@material-ui/core/Chip';
-import { UptimeRobotIncident, UptimeRobotMonitorSummaryStats } from "../../../types";
+import { BasicIncident, MonitorSummaryStats } from "../../../types";
 import { buildEntityStatsUrl, fetchUptimeRobotJson, formatDuration } from '../utils';
 
 // ////////////////////////////////////////////
@@ -21,7 +21,7 @@ import { buildEntityStatsUrl, fetchUptimeRobotJson, formatDuration } from '../ut
 */
 export function IncidentList({ error, incidents, loading }: {
   error?: Error;
-  incidents: UptimeRobotIncident[];
+  incidents: BasicIncident[];
   loading?: boolean;
 }) {
   // Show a message if the incidents are loading
@@ -81,7 +81,7 @@ export function IncidentList({ error, incidents, loading }: {
  * @param refreshNonce - The refresh nonce
  * @returns The incidents
  */
-export function useUptimeRobotIncidents(summary: UptimeRobotMonitorSummaryStats | undefined, refreshNonce: number): AsyncState<UptimeRobotIncident[]> {
+export function useBasicIncidents(summary: MonitorSummaryStats | undefined, refreshNonce: number): AsyncState<BasicIncident[]> {
   const { entity } = useEntity();
   const { fetch } = useApi(fetchApiRef);
   const entityRef = stringifyEntityRef(entity);
@@ -89,7 +89,7 @@ export function useUptimeRobotIncidents(summary: UptimeRobotMonitorSummaryStats 
     ? buildEntityStatsUrl(entityRef, 'incidents', refreshNonce)
     : undefined;
 
-  return useAsync(async (): Promise<UptimeRobotIncident[] | undefined> => {
+  return useAsync(async (): Promise<BasicIncident[] | undefined> => {
     if (!url) return undefined;
     return fetchUptimeRobotJson(fetch, url);
   }, [fetch, url]);

@@ -9,9 +9,52 @@ import { fetchApiRef } from '@backstage/core-plugin-api';
 import { stringifyEntityRef } from '@backstage/catalog-model';
 import useAsync from 'react-use/esm/useAsync';
 import { useLayoutEffect, useRef } from 'react';
-import { UptimeRobotDailyUptime, UptimeRobotMonitorSummaryStats } from '../../../types';
+import { DailyUptime, MonitorSummaryStats } from '../../../types';
 import { buildEntityStatsUrl, formatPercent, fetchUptimeRobotJson, formatDate } from '../utils';
 import { StatusPill } from './StatusPill';
+
+// ////////////////////////////////////////////
+//              STYLING HELPERS              //
+// ////////////////////////////////////////////
+
+/** The styles for the daily uptime chart
+ * 
+ * @returns The styles
+ */
+const useStyles = makeStyles({
+  chartScroller: {
+    overflowX: 'auto',
+    overflowY: 'visible',
+    scrollbarWidth: 'thin',
+    scrollbarColor: '#cfd8dc transparent',
+    '&::-webkit-scrollbar': {
+      height: 8,
+    },
+    '&::-webkit-scrollbar-track': {
+      background: 'transparent',
+    },
+    '&::-webkit-scrollbar-thumb': {
+      background: '#cfd8dc',
+      borderRadius: 8,
+    },
+    '&::-webkit-scrollbar-thumb:hover': {
+      background: '#b0bec5',
+    },
+  },
+});
+
+/** Gets the uptime color
+ * 
+ * @param value - The uptime value
+ * @returns The uptime color
+*/
+function getUptimeColor(value?: number): string {
+  if (value === undefined) return '#cfd8dc'; // Gray
+  if (value >= 100) return '#2ecc71'; // Green
+  if (value >= 99) return '#a8f0c6'; // Light green
+  if (value >= 90) return '#f5a623'; // Yellow
+  return '#e53935'; // Red
+}
 
 // ////////////////////////////////////////////
 //         EXPORTED COMPONENTS/HOOKS         //
@@ -25,7 +68,7 @@ import { StatusPill } from './StatusPill';
 */
 export function DailyUptimeChart({ chartDayCount, days = [], error, loading, status}: {
   chartDayCount: number;
-  days?: UptimeRobotDailyUptime[];
+  days?: DailyUptime[];
   error?: Error;
   loading?: boolean;
   status: string;
@@ -156,8 +199,8 @@ export function DailyUptimeChart({ chartDayCount, days = [], error, loading, sta
  * @param refreshNonce - The refresh nonce
  * @returns The daily uptime
  */
-export function useUptimeRobotDailyUptime(
-  summary: UptimeRobotMonitorSummaryStats | undefined,
+export function useDailyUptime(
+  summary: MonitorSummaryStats | undefined,
   refreshNonce: number,
 ) {
   const { entity } = useEntity();
@@ -167,51 +210,8 @@ export function useUptimeRobotDailyUptime(
     ? buildEntityStatsUrl(entityRef, 'daily-uptime', refreshNonce)
     : undefined;
 
-  return useAsync(async (): Promise<UptimeRobotDailyUptime[] | undefined> => {
+  return useAsync(async (): Promise<DailyUptime[] | undefined> => {
     if (!url) return undefined;
     return fetchUptimeRobotJson(fetch, url);
   }, [fetch, url]);
-}
-
-// ////////////////////////////////////////////////////////
-//                   HELPER FUNCTIONS                    //
-// ////////////////////////////////////////////////////////
-
-/** The styles for the daily uptime chart
- * 
- * @returns The styles
- */
-const useStyles = makeStyles({
-  chartScroller: {
-    overflowX: 'auto',
-    overflowY: 'visible',
-    scrollbarWidth: 'thin',
-    scrollbarColor: '#cfd8dc transparent',
-    '&::-webkit-scrollbar': {
-      height: 8,
-    },
-    '&::-webkit-scrollbar-track': {
-      background: 'transparent',
-    },
-    '&::-webkit-scrollbar-thumb': {
-      background: '#cfd8dc',
-      borderRadius: 8,
-    },
-    '&::-webkit-scrollbar-thumb:hover': {
-      background: '#b0bec5',
-    },
-  },
-});
-
-/** Gets the uptime color
- * 
- * @param value - The uptime value
- * @returns The uptime color
-*/
-function getUptimeColor(value?: number): string {
-  if (value === undefined) return '#cfd8dc'; // Gray
-  if (value >= 100) return '#2ecc71'; // Green
-  if (value >= 99) return '#a8f0c6'; // Light green
-  if (value >= 90) return '#f5a623'; // Yellow
-  return '#e53935'; // Red
 }

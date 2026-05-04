@@ -8,7 +8,7 @@ import { useApi } from '@backstage/core-plugin-api';
 import { fetchApiRef } from '@backstage/core-plugin-api';
 import { stringifyEntityRef } from '@backstage/catalog-model';
 import useAsync, { AsyncState } from 'react-use/esm/useAsync';
-import type { UptimeRobotMonitorSummaryStats, UptimeRobotResponseTimeChart } from '../../../types';
+import type { MonitorSummaryStats, APIResponseTimeChart } from '../../../types';
 import { buildEntityStatsUrl, fetchUptimeRobotJson, formatMs, formatTs } from '../utils';
 
 // ////////////////////////////////////////////
@@ -45,7 +45,7 @@ export function ResponseTimeChart({
   error,
   loading,
 }: {
-  data: UptimeRobotResponseTimeChart;
+  data: APIResponseTimeChart;
   error?: Error;
   loading?: boolean;
 }) {
@@ -132,10 +132,10 @@ export function ResponseTimeChart({
  * @param refreshNonce - The refresh nonce
  * @returns The response time
  */
-export function useUptimeRobotResponseTime(
-  summary: UptimeRobotMonitorSummaryStats | undefined,
+export function useResponseTime(
+  summary: MonitorSummaryStats | undefined,
   refreshNonce: number,
-): AsyncState<UptimeRobotResponseTimeChart | undefined> {
+): AsyncState<APIResponseTimeChart | undefined> {
   const { entity } = useEntity();
   const { fetch } = useApi(fetchApiRef);
   const entityRef = stringifyEntityRef(entity);
@@ -146,9 +146,9 @@ export function useUptimeRobotResponseTime(
     : undefined;
 
   // Return the response time data
-  return useAsync(async (): Promise<UptimeRobotResponseTimeChart | undefined> => {
+  return useAsync(async (): Promise<APIResponseTimeChart | undefined> => {
     if (!url) return undefined;
-    const responseTime = await fetchUptimeRobotJson<UptimeRobotResponseTimeChart | null>(fetch, url);
+    const responseTime = await fetchUptimeRobotJson<APIResponseTimeChart | null>(fetch, url);
     return responseTime ?? undefined;
   }, [fetch, url]);
 }
@@ -162,7 +162,7 @@ export function useUptimeRobotResponseTime(
  * @param series - The series of the response time
  * @returns The response time SVG
  */
-function ResponseTimeSvg({ series }: { series: UptimeRobotResponseTimeChart['series'] }) {
+function ResponseTimeSvg({ series }: { series: APIResponseTimeChart['series'] }) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [chartWidth, setChartWidth] = useState(DEFAULT_CHART_WIDTH);
   const plotX2 = chartWidth - PAD_R;

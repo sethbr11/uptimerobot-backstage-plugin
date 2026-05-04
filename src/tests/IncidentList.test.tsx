@@ -1,7 +1,7 @@
 import { renderWithEffects, wrapInTestApp } from '@backstage/test-utils';
 import { screen } from '@testing-library/react';
 import { IncidentList } from '../components/UptimeRobotCard/parts/IncidentsList';
-import type { UptimeRobotIncident } from '../types';
+import type { BasicIncident } from '../types';
 
 describe('IncidentList', () => {
   it('shows a loading message', async () => {
@@ -20,7 +20,7 @@ describe('IncidentList', () => {
   });
 
   it('renders incident rows', async () => {
-    const incidents: UptimeRobotIncident[] = [
+    const incidents: BasicIncident[] = [
       {
         id: 'a',
         type: 'down',

@@ -1,6 +1,6 @@
 import type { Entity } from '@backstage/catalog-model';
 import { UPTIMEROBOT_DEFAULT_ENTITY_ANNOTATION } from '../annotationDefaults';
-import type { UptimeRobotMonitorSummaryStats } from '../types';
+import type { MonitorSummaryStats } from '../types';
 
 /** Default entity for `EntityProvider` when rendering {@link UptimeRobotCard}. */
 export function createCardEntity(): Entity {
@@ -36,8 +36,8 @@ export function createCatalogComponentForSettings(options?: { title?: string }):
 }
 
 export function createSummaryPayload(
-  overrides?: Partial<UptimeRobotMonitorSummaryStats>,
-): UptimeRobotMonitorSummaryStats {
+  overrides?: Partial<MonitorSummaryStats>,
+): MonitorSummaryStats {
   return {
     chartDayCount: 30,
     display: {

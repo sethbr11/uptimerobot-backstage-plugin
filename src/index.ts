@@ -5,11 +5,11 @@ export {
 export { isUptimeRobotConfigured } from './entity';
 export { uptimerobotPlugin as default } from './plugin';
 export type {
-  UptimeRobotDailyUptime,
-  UptimeRobotGraphDisplay,
-  UptimeRobotIncident,
-  UptimeRobotMonitorStats,
-  UptimeRobotMonitorSummaryStats,
-  UptimeRobotResponseTimeChart,
-  UptimeRobotResponseTimePoint,
+  DailyUptime,
+  GraphDisplay,
+  BasicIncident,
+  MonitorStats,
+  MonitorSummaryStats,
+  APIResponseTimeChart,
+  ResponseTimePoint,
 } from './types';

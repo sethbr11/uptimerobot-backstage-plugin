@@ -7,7 +7,7 @@ import { useApi } from '@backstage/core-plugin-api';
 import { fetchApiRef } from '@backstage/core-plugin-api';
 import { stringifyEntityRef } from '@backstage/catalog-model';
 import { buildEntityStatsUrl, fetchUptimeRobotJson } from '../utils';
-import { UptimeRobotMonitorSummaryStats } from '../../../types';
+import { MonitorSummaryStats } from '../../../types';
 
 
 // ////////////////////////////////////////////
@@ -55,14 +55,14 @@ export function Metric({ label, value }: { label: string; value: string }) {
  * @param refreshNonce - The refresh nonce
  * @returns The UptimeRobot summary stats
 */
-export function useUptimeRobotStatsSummary(refreshNonce: number): AsyncState<UptimeRobotMonitorSummaryStats> {
+export function useStatsSummary(refreshNonce: number): AsyncState<MonitorSummaryStats> {
   const { entity } = useEntity();
   const { fetch } = useApi(fetchApiRef);
   const entityRef = stringifyEntityRef(entity);
   const url = buildEntityStatsUrl(entityRef, 'summary', refreshNonce);
 
   return useAsync(
-    async (): Promise<UptimeRobotMonitorSummaryStats> =>
+    async (): Promise<MonitorSummaryStats> =>
       fetchUptimeRobotJson(fetch, url),
     [fetch, url],
   );

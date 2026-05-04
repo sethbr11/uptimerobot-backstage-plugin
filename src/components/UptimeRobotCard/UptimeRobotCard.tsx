@@ -7,7 +7,7 @@ import Typography from '@material-ui/core/Typography';
 import CachedIcon from '@material-ui/icons/Cached';
 import { useState } from 'react';
 import { DailyUptimeChart, IncidentList, MetricGrid, Metric, ResponseTimeChart, StatusPill } from './parts';
-import { useUptimeRobotStatsSummary, useUptimeRobotDailyUptime, useUptimeRobotResponseTime, useUptimeRobotIncidents } from './parts';
+import { useStatsSummary, useDailyUptime, useResponseTime, useBasicIncidents } from './parts';
 import { formatPercent } from './utils';
 
 /** The UptimeRobot card component
@@ -16,22 +16,22 @@ import { formatPercent } from './utils';
 */
 export function UptimeRobotCard() {
   const [refreshNonce, setRefreshNonce] = useState(0);
-  const { value, loading, error } = useUptimeRobotStatsSummary(refreshNonce);
+  const { value, loading, error } = useStatsSummary(refreshNonce);
   const {
     value: dailyUptime,
     loading: dailyUptimeLoading,
     error: dailyUptimeError,
-  } = useUptimeRobotDailyUptime(value, refreshNonce);
+  } = useDailyUptime(value, refreshNonce);
   const {
     value: responseTime,
     loading: responseTimeLoading,
     error: responseTimeError,
-  } = useUptimeRobotResponseTime(value, refreshNonce);
+  } = useResponseTime(value, refreshNonce);
   const {
     value: loadedIncidents,
     loading: incidentsLoading,
     error: incidentsError,
-  } = useUptimeRobotIncidents(value, refreshNonce);
+  } = useBasicIncidents(value, refreshNonce);
   const [showAllIncidents, setShowAllIncidents] = useState(false);
 
   // Show a loading indicator while fetching stats

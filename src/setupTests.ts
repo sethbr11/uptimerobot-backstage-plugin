@@ -33,8 +33,10 @@ function shouldSuppressConsoleWarn(args: unknown[]): boolean {
 if (!globalForSetup.__uptimerobotJestConsoleSuppressInstalled) {
   globalForSetup.__uptimerobotJestConsoleSuppressInstalled = true;
 
+  /* eslint-disable no-console -- capture originals before jest.spyOn replaces methods */
   const origError = console.error.bind(console);
   const origWarn = console.warn.bind(console);
+  /* eslint-enable no-console */
 
   jest.spyOn(console, 'error').mockImplementation((...args: unknown[]) => {
     if (shouldSuppressConsoleError(args)) {

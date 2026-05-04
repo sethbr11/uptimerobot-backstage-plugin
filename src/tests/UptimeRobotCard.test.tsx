@@ -10,7 +10,7 @@ import type { ReactElement } from 'react';
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { UptimeRobotCard } from '../components/UptimeRobotCard';
-import type { UptimeRobotIncident } from '../types';
+import type { BasicIncident } from '../types';
 import { createCardEntity, createSummaryPayload } from './fixtures';
 
 function requestUrl(input: RequestInfo | URL): string {
@@ -75,7 +75,7 @@ describe('UptimeRobotCard', () => {
   it('renders uptime metrics, charts, incidents, and a monitor link when data loads', async () => {
     const summary = createSummaryPayload();
     const daily = [{ date: '2024-06-01', uptimeRatio: 0.999 }];
-    const incidents: UptimeRobotIncident[] = [
+    const incidents: BasicIncident[] = [
       {
         id: 'i1',
         type: 'down',
@@ -136,7 +136,7 @@ describe('UptimeRobotCard', () => {
   it('toggles incident list when more than two incidents exist', async () => {
     const user = userEvent.setup();
     const summary = createSummaryPayload();
-    const incidents: UptimeRobotIncident[] = [
+    const incidents: BasicIncident[] = [
       {
         id: '1',
         type: 'down',

@@ -147,4 +147,69 @@ describe('UptimeRobotSettings', () => {
     ).toBeInTheDocument();
     expect(fetchMock.mock.calls.some(([, init]) => init?.method === 'DELETE')).toBe(true);
   });
+
+  it('shows component list load error in helper text', async () => {
+    const fetchMock = jest.fn(async (input: RequestInfo | URL) => {
+      if (requestUrl(input).includes('stats-cache/daily-uptime')) {
+        return jsonResponse({ records: 0, components: 0 });
+      }
+      return new Response('unexpected', { status: 404 });
+    });
+
+    renderInTestApp(<UptimeRobotSettings />, {
+      apis: [
+        mockApis.fetch({ baseImplementation: fetchMock }),
+        [
+          catalogApiRef,
+          {
+            getEntities: jest.fn().mockRejectedValue(new Error('catalog unavailable')),
+          },
+        ],
+      ],
+    });
+
+    expect(
+      await screen.findByText(/Failed to load component options: catalog unavailable/),
+    ).toBeInTheDocument();
+  });
+
+  it('shows error when reset-all fails', async () => {
+    const user = userEvent.setup();
+    const fetchMock = jest.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
+      const url = requestUrl(input);
+      if (url.includes('stats-cache/daily-uptime') && init?.method === 'DELETE') {
+        return new Response(JSON.stringify({ message: 'permission denied' }), {
+          status: 403,
+          headers: { 'Content-Type': 'application/json' },
+        });
+      }
+      if (url.includes('stats-cache/daily-uptime')) {
+        return jsonResponse({ records: 1, components: 1 });
+      }
+      return new Response('unexpected', { status: 404 });
+    });
+
+    renderInTestApp(<UptimeRobotSettings />, {
+      apis: [
+        mockApis.fetch({ baseImplementation: fetchMock }),
+        [
+          catalogApiRef,
+          {
+            getEntities: jest.fn().mockResolvedValue({ items: [] }),
+          },
+        ],
+      ],
+    });
+
+    await screen.findByText(/1 cached records/);
+
+    await user.click(
+      screen.getByRole('checkbox', {
+        name: /I understand this will delete all cached UptimeRobot daily uptime rows/i,
+      }),
+    );
+    await user.click(screen.getByRole('button', { name: /Reset All UptimeRobot Daily Stats/i }));
+
+    expect(await screen.findByText(/permission denied/)).toBeInTheDocument();
+  });
 });

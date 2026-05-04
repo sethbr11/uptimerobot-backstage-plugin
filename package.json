@@ -24,7 +24,8 @@
     "start": "backstage-cli package start",
     "build": "backstage-cli package build",
     "lint": "backstage-cli package lint",
-    "test": "backstage-cli package test",
+    "test": "backstage-cli package test --all --ci --watchAll=false",
+    "test:coverage": "backstage-cli package test --all --ci --watchAll=false --coverage",
     "clean": "backstage-cli package clean",
     "prepack": "backstage-cli package prepack",
     "postpack": "backstage-cli package postpack"

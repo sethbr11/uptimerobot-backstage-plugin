@@ -7,7 +7,7 @@
 
 UNOFFICIAL catalog entity card and user settings page for [UptimeRobot](https://uptimerobot.com/) monitor health.
 
-![UptimeRobot entity card on a component overview](docs/images/entity-card-preview.png)
+![UptimeRobot entity card on a component overview](https://raw.githubusercontent.com/sethbr11/uptimerobot-backstage-plugin/main/docs/images/entity-card-preview.png)
 
 ## What this package does
 

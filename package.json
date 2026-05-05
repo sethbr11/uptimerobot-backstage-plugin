@@ -1,6 +1,6 @@
 {
   "name": "@sethbr11/plugin-uptimerobot",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "license": "Apache-2.0",
   "description": "Unofficial Backstage frontend plugin for UptimeRobot on catalog entity pages",
   "keywords": [

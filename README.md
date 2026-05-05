@@ -1,8 +1,8 @@
-# UptimeRobot frontend plugin (`@backstage-community/plugin-uptimerobot`)
+# UptimeRobot frontend plugin (`@sethbr11/plugin-uptimerobot`)
 
-[![npm version](https://img.shields.io/npm/v/%40backstage-community%2Fplugin-uptimerobot)](https://www.npmjs.com/package/@backstage-community/plugin-uptimerobot)
-[![npm downloads](https://img.shields.io/npm/dm/%40backstage-community%2Fplugin-uptimerobot)](https://www.npmjs.com/package/@backstage-community/plugin-uptimerobot)
-[![license](https://img.shields.io/npm/l/%40backstage-community%2Fplugin-uptimerobot)](./LICENSE)
+[![npm version](https://img.shields.io/npm/v/%40sethbr11%2Fplugin-uptimerobot)](https://www.npmjs.com/package/@sethbr11/plugin-uptimerobot)
+[![npm downloads](https://img.shields.io/npm/dm/%40sethbr11%2Fplugin-uptimerobot)](https://www.npmjs.com/package/@sethbr11/plugin-uptimerobot)
+[![license](https://img.shields.io/npm/l/%40sethbr11%2Fplugin-uptimerobot)](./LICENSE)
 [![Backstage frontend plugin](https://img.shields.io/badge/backstage-frontend--plugin-9BF0E1)](https://backstage.io/)
 
 UNOFFICIAL catalog entity card and user settings page for [UptimeRobot](https://uptimerobot.com/) monitor health.
@@ -16,20 +16,20 @@ UNOFFICIAL catalog entity card and user settings page for [UptimeRobot](https://
 - Reads data from the backend plugin over `plugin://uptimerobot/...` discovery routes.
 
 This package is frontend-only. You also need the backend package in the same Backstage deployment:
-`@backstage-community/plugin-uptimerobot-backend`.
+[`@sethbr11/plugin-uptimerobot-backend`](https://www.npmjs.com/package/@sethbr11/plugin-uptimerobot-backend).
 
 ## Installation
 
 Install frontend package in your Backstage app:
 
 ```bash
-yarn --cwd packages/app add @backstage-community/plugin-uptimerobot
+yarn --cwd packages/app add @sethbr11/plugin-uptimerobot
 ```
 
 Register the feature loader in `packages/app/src/App.tsx` (or your app root):
 
 ```tsx
-import uptimeRobotPlugin from '@backstage-community/plugin-uptimerobot';
+import uptimeRobotPlugin from '@sethbr11/plugin-uptimerobot';
 
 const app = createApp({
   features: [
@@ -44,13 +44,13 @@ const app = createApp({
 Install backend package:
 
 ```bash
-yarn --cwd packages/backend add @backstage-community/plugin-uptimerobot-backend
+yarn --cwd packages/backend add @sethbr11/plugin-uptimerobot-backend
 ```
 
 Register backend plugin in your backend startup:
 
 ```ts
-backend.add(import('@backstage-community/plugin-uptimerobot-backend'));
+backend.add(import('@sethbr11/plugin-uptimerobot-backend'));
 ```
 
 Add config values (for example in `app-config.yaml`):

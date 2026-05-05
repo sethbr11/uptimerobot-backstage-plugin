@@ -2,10 +2,10 @@
 
 [![npm version](https://img.shields.io/npm/v/%40sethbr11%2Fplugin-uptimerobot)](https://www.npmjs.com/package/@sethbr11/plugin-uptimerobot)
 [![npm downloads](https://img.shields.io/npm/dm/%40sethbr11%2Fplugin-uptimerobot)](https://www.npmjs.com/package/@sethbr11/plugin-uptimerobot)
-[![license](https://img.shields.io/npm/l/%40sethbr11%2Fplugin-uptimerobot)](./LICENSE)
+[![license](https://img.shields.io/npm/l/%40sethbr11%2Fplugin-uptimerobot)](https://www.apache.org/licenses/LICENSE-2.0)
 [![Backstage frontend plugin](https://img.shields.io/badge/backstage-frontend--plugin-9BF0E1)](https://backstage.io/)
 
-UNOFFICIAL catalog entity card and user settings page for [UptimeRobot](https://uptimerobot.com/) monitor health.
+UNOFFICIAL catalog entity card and user settings page for [UptimeRobot](https://uptimerobot.com/) monitor health in Backstage.
 
 ![UptimeRobot entity card on a component overview](https://raw.githubusercontent.com/sethbr11/uptimerobot-backstage-plugin/main/docs/images/entity-card-preview.png)
 
@@ -172,5 +172,5 @@ If you want a fixed overview card position, add this extension ID under `app.ext
 
 ## License
 
-Apache-2.0, see [LICENSE](./LICENSE).
+Apache-2.0. See [LICENSE](https://www.apache.org/licenses/LICENSE-2.0).
 

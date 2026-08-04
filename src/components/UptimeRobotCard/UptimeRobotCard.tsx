@@ -8,7 +8,7 @@ import CachedIcon from '@material-ui/icons/Cached';
 import { useState } from 'react';
 import { DailyUptimeChart, IncidentList, MetricGrid, Metric, ResponseTimeChart, StatusPill } from './parts';
 import { useStatsSummary, useDailyUptime, useResponseTime, useBasicIncidents } from './parts';
-import { formatPercent } from './utils';
+import { formatPercent, isSafeHttpUrl } from './utils';
 
 /** The UptimeRobot card component
  * 
@@ -63,12 +63,17 @@ export function UptimeRobotCard() {
   const activeResponseTime = responseTime ?? value.responseTime;
 
   // Show the card
+  const monitorHref =
+    value.monitor.url && isSafeHttpUrl(value.monitor.url)
+      ? value.monitor.url
+      : undefined;
+
   return (
     <InfoCard
       title="UptimeRobot"
       subheader={
-        value.monitor.url ? (
-          <Link href={value.monitor.url} target="_blank" rel="noopener noreferrer" color="inherit">
+        monitorHref ? (
+          <Link href={monitorHref} target="_blank" rel="noopener noreferrer" color="inherit">
             {value.monitor.name}
           </Link>
         ) : (
@@ -120,18 +125,22 @@ export function UptimeRobotCard() {
             label="Last 24 hours"
             value={formatPercent(value.uptime.last24Hours)}
           />
-          <Metric
-            label="Last 7 days"
-            value={formatPercent(value.uptime.last7Days)}
-          />
+          {value.display.dailyUptimeDays !== 7 ? (
+            <Metric
+              label="Last 7 days"
+              value={formatPercent(value.uptime.last7Days)}
+            />
+          ) : null}
           <Metric
             label={`Last ${value.display.dailyUptimeDays} days`}
-            value={formatPercent(value.uptime.last30Days)}
+            value={formatPercent(value.uptime.chartWindow)}
           />
-          <Metric
-            label="Last 90 days"
-            value={formatPercent(value.uptime.last90Days)}
-          />
+          {value.display.dailyUptimeDays !== 90 ? (
+            <Metric
+              label="Last 90 days"
+              value={formatPercent(value.uptime.last90Days)}
+            />
+          ) : null}
         </MetricGrid>
       </Box>
 

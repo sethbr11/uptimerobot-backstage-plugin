@@ -4,7 +4,18 @@ import {
   formatDuration,
   formatMs,
   formatPercent,
+  isSafeHttpUrl,
 } from '../components/UptimeRobotCard/utils';
+
+describe('isSafeHttpUrl', () => {
+  it('allows only http and https URLs', () => {
+    expect(isSafeHttpUrl('https://example.com/x')).toBe(true);
+    expect(isSafeHttpUrl('http://example.com/x')).toBe(true);
+    expect(isSafeHttpUrl(`java${'script'}:alert(1)`)).toBe(false);
+    expect(isSafeHttpUrl('data:text/html,hi')).toBe(false);
+    expect(isSafeHttpUrl('not a url')).toBe(false);
+  });
+});
 
 describe('formatPercent', () => {
   it('returns N/A for undefined', () => {

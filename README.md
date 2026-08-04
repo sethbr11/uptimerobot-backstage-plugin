@@ -57,10 +57,62 @@ Add config values (for example in `app-config.yaml`):
 
 ```yaml
 uptimerobot:
-  apiKey: ${UPTIMEROBOT_API_KEY}
+  apiKey: ${UPTIME_ROBOT_API_KEY}
 ```
 
 Optional graph/display settings can also be configured under `uptimerobot`.
+
+## Settings page customization
+
+Stock registration renders `<UptimeRobotSettings />` with **no** reset controls (stats only).
+Override the `uptimerobot` settings SubPage in your app and pass host conditions:
+
+| Prop | Purpose |
+|------|---------|
+| `showResetAll` | Show “reset all daily stats” |
+| `showResetComponents` | Show per-component reset picker |
+| `filterResettableEntities` | App-supplied `(entity) => boolean` filter for the picker |
+| `allowArbitraryEntityRefs` | When `false`, free-typing refs is disabled |
+
+Example (owners reset owned components; DevOps reset any + all):
+
+```tsx
+import { Content } from '@backstage/core-components';
+import { UptimeRobotSettings } from '@sethbr11/plugin-uptimerobot';
+import { SubPageBlueprint, createFrontendModule } from '@backstage/frontend-plugin-api';
+
+const uptimeRobotSettingsPage = SubPageBlueprint.makeWithOverrides({
+  name: 'uptimerobot',
+  factory(originalFactory) {
+    return originalFactory({
+      path: 'uptimerobot',
+      title: 'UptimeRobot',
+      // Content matches stock settings tabs (page padding around the card)
+      loader: async () => (
+        <Content>
+          <HostUptimeRobotSettings />
+        </Content>
+      ),
+    });
+  },
+});
+
+function HostUptimeRobotSettings() {
+  const isDevops = /* your group / role check */;
+  return (
+    <UptimeRobotSettings
+      showResetAll={isDevops}
+      showResetComponents
+      allowArbitraryEntityRefs={isDevops}
+      filterResettableEntities={
+        isDevops ? undefined : entity => /* your ownership check */ true
+      }
+    />
+  );
+}
+```
+
+Pair this with backend permissions (`uptimerobot.cache.reset` vs `uptimerobot.cache.reset-entity`) when `permission.enabled` is true — see the backend package README.
 
 ## Catalog annotation behavior
 
@@ -121,7 +173,8 @@ Only add it to `app.extensions` if you want explicit ordering in the entity over
 ## Public exports
 
 - Default export: `uptimerobotPlugin` feature loader.
-- Named exports: `UPTIMEROBOT_DEFAULT_ENTITY_ANNOTATION`, `UPTIMEROBOT_MONITOR_URL_ANNOTATION`.
+- Named exports: `UPTIMEROBOT_DEFAULT_ENTITY_ANNOTATION`, `UPTIMEROBOT_MONITOR_URL_ANNOTATION`, `UptimeRobotSettings`, `UptimeRobotSettingsProps`, `isUptimeRobotConfigured`.
+- Types: `DailyUptime`, `GraphDisplay`, `BasicIncident`, `MonitorStats`, `MonitorSummaryStats`, `APIResponseTimeChart`, `ResponseTimePoint`.
 
 ## Chart configuration
 

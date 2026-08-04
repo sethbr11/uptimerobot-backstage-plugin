@@ -19,12 +19,15 @@ export function createCardEntity(): Entity {
 }
 
 /** Component returned from catalog for settings autocomplete filtering. */
-export function createCatalogComponentForSettings(options?: { title?: string }): Entity {
+export function createCatalogComponentForSettings(options?: {
+  name?: string;
+  title?: string;
+}): Entity {
   return {
     apiVersion: 'backstage.io/v1alpha1',
     kind: 'Component',
     metadata: {
-      name: 'svc',
+      name: options?.name ?? 'svc',
       namespace: 'default',
       title: options?.title,
       annotations: {
@@ -55,7 +58,7 @@ export function createSummaryPayload(
     uptime: {
       last24Hours: 99.912,
       last7Days: 99.5,
-      last30Days: 98.2,
+      chartWindow: 98.2,
       last90Days: 97.1,
     },
     responseTime: {

@@ -3,6 +3,7 @@ import {
   createFrontendFeatureLoader,
   createFrontendModule,
 } from '@backstage/frontend-plugin-api';
+import { Content } from '@backstage/core-components';
 import { EntityCardBlueprint } from '@backstage/plugin-catalog-react/alpha';
 import { isUptimeRobotConfigured } from './entity';
 
@@ -38,7 +39,13 @@ const uptimeRobotSettingsPage = SubPageBlueprint.make({
       const { UptimeRobotSettings } = await import(
         './components/UptimeRobotSettings/UptimeRobotSettings'
       );
-      return <UptimeRobotSettings />;
+      // Match stock settings SubPages (General / Auth / Feature Flags): Content
+      // provides the page padding around the InfoCard.
+      return (
+        <Content>
+          <UptimeRobotSettings />
+        </Content>
+      );
     },
   },
 });

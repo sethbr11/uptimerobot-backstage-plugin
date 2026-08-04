@@ -55,11 +55,51 @@ type UptimeRobotComponentOption = {
 //               MAIN COMPONENT              //
 // ////////////////////////////////////////////
 
+/** Props for {@link UptimeRobotSettings}.
+ *
+ * Host apps supply these when overriding the settings SubPage so feature scoping
+ * (owners vs DevOps, custom group checks, etc.) stays in app code.
+ */
+export type UptimeRobotSettingsProps = {
+  /**
+   * When `true`, shows the destructive "reset all" control.
+   * Defaults to `false`. Backend enforces `uptimerobot.cache.reset` when
+   * the permission framework is enabled.
+   */
+  showResetAll?: boolean;
+  /**
+   * When `true`, shows the per-component reset picker and button.
+   * Defaults to `false`. Backend enforces `uptimerobot.cache.reset-entity`
+   * (catalog-entity resource permission) when the permission framework is enabled.
+   */
+  showResetComponents?: boolean;
+  /**
+   * Optional host filter applied after the built-in UptimeRobot annotation filter.
+   * Use this to limit the picker to entities the signed-in user may reset
+   * (for example catalog ownership). Omit to list all annotated Components.
+   */
+  filterResettableEntities?: (entity: Entity) => boolean;
+  /**
+   * When `false`, only entities from the options list can be selected
+   * (blocks free-typing arbitrary entity refs). Defaults to `false` so hosts
+   * must opt in (typical for admin/DevOps override flows).
+   */
+  allowArbitraryEntityRefs?: boolean;
+};
+
 /** Settings page for UptimeRobot cached stats maintenance.
  * 
  * @returns The UptimeRobot settings page
  */
-export function UptimeRobotSettings(): JSX.Element {
+export function UptimeRobotSettings(
+  props: UptimeRobotSettingsProps = {},
+): JSX.Element {
+  const {
+    showResetAll = false,
+    showResetComponents = false,
+    filterResettableEntities,
+    allowArbitraryEntityRefs = false,
+  } = props;
   const { fetch } = useApi(fetchApiRef);
   const catalogApi = useApi(catalogApiRef);
   const [entityRefs, setEntityRefs] = useState<string[]>([]);
@@ -83,6 +123,8 @@ export function UptimeRobotSettings(): JSX.Element {
     loading: componentOptionsLoading,
     error: componentOptionsError,
   } = useAsync(async (): Promise<UptimeRobotComponentOption[]> => {
+    if (!showResetComponents) return [];
+
     const { items } = await catalogApi.getEntities({
       filter: {
         kind: 'Component',
@@ -93,15 +135,18 @@ export function UptimeRobotSettings(): JSX.Element {
         'metadata.namespace',
         'metadata.title',
         'metadata.annotations',
+        'spec.owner',
+        'relations',
       ],
       limit: 5000,
     });
 
     return items
       .filter(isUptimeRobotConfigured)
+      .filter(entity => (filterResettableEntities ? filterResettableEntities(entity) : true))
       .map(formatEntityOption)
       .sort((a, b) => a.label.localeCompare(b.label));
-  }, [catalogApi]);
+  }, [catalogApi, showResetComponents, filterResettableEntities]);
 
   const optionLabels = new Map(
     componentOptions.map(option => [option.entityRef, option.label]),
@@ -171,78 +216,117 @@ export function UptimeRobotSettings(): JSX.Element {
           </Typography>
         ) : null}
 
-        <Divider />
+        {showResetComponents ? (
+          <>
+            <Divider />
 
-        <Box display="grid" gridGap={8}>
-          <Typography variant="subtitle2">Reset components</Typography>
-          <CatalogAutocomplete<string, true, false, true>
-            multiple
-            freeSolo
-            disableCloseOnSelect
-            label="Components"
-            name="uptimerobot-reset-components"
-            loading={componentOptionsLoading}
-            options={componentOptions.map(option => option.entityRef)}
-            value={entityRefs}
-            TextFieldProps={{
-              helperText: componentOptionsError
-                ? `Failed to load component options: ${componentOptionsError.message}`
-                : `Type an entity ref, or choose components annotated with ${UPTIMEROBOT_DEFAULT_ENTITY_ANNOTATION}.`,
-            }}
-            getOptionLabel={option => optionLabels.get(option) ?? option}
-            onChange={(_event, nextEntityRefs) => {
-              setEntityRefs(
-                nextEntityRefs
-                  .map(ref => ref.trim())
-                  .filter((ref, index, refs) => ref && refs.indexOf(ref) === index),
-              );
-              setConfirmResetEntity(false);
-            }}
-          />
-          <FormControlLabel
-            control={
-              <Checkbox
-                checked={confirmResetEntity}
-                onChange={event => setConfirmResetEntity(event.target.checked)}
+            <Box display="grid" gridGap={8}>
+              <Typography variant="subtitle2">Reset components</Typography>
+              {allowArbitraryEntityRefs ? (
+                <CatalogAutocomplete<string, true, false, true>
+                  multiple
+                  freeSolo
+                  disableCloseOnSelect
+                  label="Components"
+                  name="uptimerobot-reset-components"
+                  loading={componentOptionsLoading}
+                  options={componentOptions.map(option => option.entityRef)}
+                  value={entityRefs}
+                  TextFieldProps={{
+                    helperText: componentOptionsError
+                      ? `Failed to load component options: ${componentOptionsError.message}`
+                      : `Type an entity ref, or choose components annotated with ${UPTIMEROBOT_DEFAULT_ENTITY_ANNOTATION}.`,
+                  }}
+                  getOptionLabel={option => optionLabels.get(option) ?? option}
+                  onChange={(_event, nextEntityRefs) => {
+                    setEntityRefs(
+                      nextEntityRefs
+                        .map(ref => ref.trim())
+                        .filter((ref, index, refs) => ref && refs.indexOf(ref) === index),
+                    );
+                    setConfirmResetEntity(false);
+                  }}
+                />
+              ) : (
+                <CatalogAutocomplete<string, true, false, false>
+                  multiple
+                  freeSolo={false}
+                  disableCloseOnSelect
+                  label="Components"
+                  name="uptimerobot-reset-components"
+                  loading={componentOptionsLoading}
+                  options={componentOptions.map(option => option.entityRef)}
+                  value={entityRefs}
+                  TextFieldProps={{
+                    helperText: componentOptionsError
+                      ? `Failed to load component options: ${componentOptionsError.message}`
+                      : `Choose components annotated with ${UPTIMEROBOT_DEFAULT_ENTITY_ANNOTATION}.`,
+                  }}
+                  getOptionLabel={option => optionLabels.get(option) ?? option}
+                  onChange={(_event, nextEntityRefs) => {
+                    const allowed = new Set(
+                      componentOptions.map(option => option.entityRef),
+                    );
+                    setEntityRefs(
+                      nextEntityRefs
+                        .map(ref => ref.trim())
+                        .filter((ref, index, refs) => ref && refs.indexOf(ref) === index)
+                        .filter(ref => allowed.has(ref)),
+                    );
+                    setConfirmResetEntity(false);
+                  }}
+                />
+              )}
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={confirmResetEntity}
+                    onChange={event => setConfirmResetEntity(event.target.checked)}
+                  />
+                }
+                label="I understand this will delete cached daily uptime rows for the selected components."
               />
-            }
-            label="I understand this will delete cached daily uptime rows for the selected components."
-          />
-          <Box>
-            <Button
-              color="primary"
-              disabled={entityRefs.length === 0 || !confirmResetEntity}
-              variant="outlined"
-              onClick={resetEntities}
-            >
-              Reset Component Caches
-            </Button>
-          </Box>
-        </Box>
+              <Box>
+                <Button
+                  color="primary"
+                  disabled={entityRefs.length === 0 || !confirmResetEntity}
+                  variant="outlined"
+                  onClick={resetEntities}
+                >
+                  Reset Component Caches
+                </Button>
+              </Box>
+            </Box>
+          </>
+        ) : null}
 
-        <Divider />
+        {showResetAll ? (
+          <>
+            <Divider />
 
-        <Box>
-          <FormControlLabel
-            control={
-              <Checkbox
-                checked={confirmResetAll}
-                onChange={event => setConfirmResetAll(event.target.checked)}
+            <Box>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={confirmResetAll}
+                    onChange={event => setConfirmResetAll(event.target.checked)}
+                  />
+                }
+                label="I understand this will delete all cached UptimeRobot daily uptime rows."
               />
-            }
-            label="I understand this will delete all cached UptimeRobot daily uptime rows."
-          />
-          <Box>
-            <Button
-              color="secondary"
-              disabled={!confirmResetAll}
-              variant="outlined"
-              onClick={resetAll}
-            >
-            Reset All UptimeRobot Daily Stats
-            </Button>
-          </Box>
-        </Box>
+              <Box>
+                <Button
+                  color="secondary"
+                  disabled={!confirmResetAll}
+                  variant="outlined"
+                  onClick={resetAll}
+                >
+                  Reset All UptimeRobot Daily Stats
+                </Button>
+              </Box>
+            </Box>
+          </>
+        ) : null}
 
         {status ? (
           <Typography variant="body2" color="textSecondary">

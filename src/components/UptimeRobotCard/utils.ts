@@ -11,6 +11,16 @@ export function formatPercent(value?: number): string {
     : `${value.toFixed(3).replace(/\.?0+$/, '')}%`;
 }
 
+/** True only for absolute http(s) URLs safe to use as link hrefs. */
+export function isSafeHttpUrl(url: string): boolean {
+  try {
+    const parsed = new URL(url);
+    return parsed.protocol === 'http:' || parsed.protocol === 'https:';
+  } catch {
+    return false;
+  }
+}
+
 /** Builds the entity stats URL
  * 
  * @param entityRef - The entity reference

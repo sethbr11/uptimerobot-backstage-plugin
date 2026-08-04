@@ -8,8 +8,17 @@
     "uptimerobot",
     "monitoring"
   ],
-  "main": "dist/index.esm.js",
-  "types": "dist/index.d.ts",
+  "author": "Seth Brock",
+  "homepage": "https://github.com/sethbr11/uptimerobot-backstage-plugin#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sethbr11/uptimerobot-backstage-plugin.git"
+  },
+  "bugs": {
+    "url": "https://github.com/sethbr11/uptimerobot-backstage-plugin/issues"
+  },
+  "main": "src/index.ts",
+  "types": "src/index.ts",
   "publishConfig": {
     "access": "public",
     "main": "dist/index.esm.js",
@@ -26,14 +35,14 @@
   "sideEffects": false,
   "scripts": {
     "start": "backstage-cli package start",
-    "build": "backstage-cli package build",
+    "build": "tsc && backstage-cli package build",
     "lint": "backstage-cli package lint",
     "test": "backstage-cli package test --all --ci --watchAll=false",
     "test:coverage": "backstage-cli package test --all --ci --watchAll=false --coverage",
     "clean": "backstage-cli package clean",
+    "tsc": "tsc",
     "prepack": "backstage-cli package prepack",
-    "postpack": "backstage-cli package postpack",
-    "postpublish": "git tag v$npm_package_version && git push origin --tags"
+    "postpack": "backstage-cli package postpack"
   },
   "dependencies": {
     "@backstage/catalog-model": "^1.7.5",
@@ -41,17 +50,18 @@
     "@backstage/core-plugin-api": "^1.12.5",
     "@backstage/frontend-plugin-api": "^0.16.0",
     "@backstage/plugin-catalog-react": "^2.1.4",
-    "@backstage/theme": "^0.7.3",
-    "@backstage/ui": "^0.14.0",
     "@material-ui/core": "^4.12.2",
     "@material-ui/icons": "^4.9.1",
     "react-use": "^17.2.4"
   },
   "peerDependencies": {
-    "react": "^16.13.1 || ^17.0.0 || ^18.0.0"
+    "react": "^16.13.1 || ^17.0.0 || ^18.0.0",
+    "react-dom": "^16.13.1 || ^17.0.0 || ^18.0.0",
+    "react-router-dom": "^6.0.0"
   },
   "devDependencies": {
     "@backstage/cli": "^0.36.1",
+    "@backstage/cli-defaults": "^0.1.1",
     "@backstage/frontend-defaults": "^0.5.1",
     "@backstage/frontend-dev-utils": "^0.1.1",
     "@backstage/frontend-test-utils": "^0.5.2",
@@ -59,8 +69,13 @@
     "@testing-library/jest-dom": "^6.0.0",
     "@testing-library/react": "^14.0.0",
     "@testing-library/user-event": "^14.0.0",
+    "@types/jest": "^30.0.0",
+    "jest": "^30.2.0",
     "msw": "^1.0.0",
-    "react": "^16.13.1 || ^17.0.0 || ^18.0.0"
+    "react": "^16.13.1 || ^17.0.0 || ^18.0.0",
+    "react-dom": "^16.13.1 || ^17.0.0 || ^18.0.0",
+    "react-router-dom": "^6.0.0",
+    "typescript": "~5.8.0"
   },
   "files": [
     "dist",
